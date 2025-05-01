@@ -52,16 +52,15 @@ namespace EverSneaks
         public async Task LoadGlb(string filePath)
         {
             var assetsService = Application.Current.Container.Resolve<AssetsService>();
-            var assetsDirectory = Application.Current.Container.Resolve<AssetsDirectory>();
             
             Model model = null;
             using (var fileStream = File.OpenRead(filePath))
             {
-                model = await Evergine.Runtimes.GLB.GLBRuntime.Instance.Read(fileStream, CustomMaterialAssigner);
+                model = await Evergine.Runtimes.GLB.GLBRuntime.Instance.Read(fileStream);
+                // model = await Evergine.Runtimes.GLB.GLBRuntime.Instance.Read(fileStream, CustomMaterialAssigner);
             }
             
             var entity = model.InstantiateModelHierarchy(assetsService);
-            var screenContextManager = this.Container.Resolve<ScreenContextManager>();
 
             entity.Name = "Runtime loaded GLB";
             

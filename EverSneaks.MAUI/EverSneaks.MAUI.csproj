@@ -66,7 +66,6 @@
         <EvergineProfileName>#MAUI#Android</EvergineProfileName>
       </PropertyGroup>
       <ItemGroup>
-        <PackageReference Include="Evergine.Bindings.Draco" Version="2024.7.19.9" />
         <PackageReference Include="Xamarin.AndroidX.Collection" Version="1.4.2" />
         <PackageReference Include="Xamarin.AndroidX.Collection.Ktx" Version="1.4.2" />
         <PackageReference Include="Evergine.Android" Version="2025.3.18.1041" />
@@ -91,7 +90,6 @@
         <MtouchInterpreter>-all</MtouchInterpreter>
       </PropertyGroup>
       <ItemGroup>
-        <PackageReference Include="Evergine.Bindings.Draco" Version="2024.7.19.9" />
         <PackageReference Include="Evergine.iOS" Version="2025.3.18.1041" />
         <PackageReference Include="Evergine.HLSLEverywhere" Version="2025.3.18.1041" />
         <PackageReference Include="Evergine.Metal" Version="2025.3.18.1041" />

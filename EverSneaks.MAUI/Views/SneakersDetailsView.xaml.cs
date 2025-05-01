@@ -72,7 +72,7 @@ public partial class SneakersDetailsView : ContentPage
                 },
                 new ModelToLoad()
                 {
-                    Description = "Elphinestone Optmised (Polycam, Optimised w gltf-transform optimize)",
+                    Description = "Elphinestone Optmised (Polycam, gltf-transform optimize draco)",
                     FileName = "elphinestone_optimised.glb",
                     Url = "https://redpointdemo.blob.core.windows.net/data/elphinestone_optimised.glb"
                 },
@@ -102,9 +102,7 @@ public partial class SneakersDetailsView : ContentPage
                 },
             };
             
-            await DisplayAlert("Please select a model to dynamically load from blob storage.", "Select a model to load", "OK");
-            
-            var choice = await DisplayActionSheet("Select a model to load", "Cancel", null, models.Select(item => item.Description).ToArray());
+            var choice = await DisplayActionSheet("Please select a model to load from blob storage", "Cancel", null, models.Select(item => item.Description).ToArray());
             
             var model = models.FirstOrDefault(item => item.Description == choice);
             if (model == null)
