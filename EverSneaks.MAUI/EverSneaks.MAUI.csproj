@@ -17,7 +17,7 @@
     <!-- Versions -->
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
     <ApplicationVersion>1</ApplicationVersion>
-    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">12.2</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
     <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
@@ -66,6 +66,7 @@
         <EvergineProfileName>#MAUI#Android</EvergineProfileName>
       </PropertyGroup>
       <ItemGroup>
+        <PackageReference Include="Evergine.Bindings.Draco" Version="2024.7.19.9" />
         <PackageReference Include="Xamarin.AndroidX.Collection" Version="1.4.2" />
         <PackageReference Include="Xamarin.AndroidX.Collection.Ktx" Version="1.4.2" />
         <PackageReference Include="Evergine.Android" Version="2025.3.18.1041" />
@@ -90,6 +91,7 @@
         <MtouchInterpreter>-all</MtouchInterpreter>
       </PropertyGroup>
       <ItemGroup>
+        <PackageReference Include="Evergine.Bindings.Draco" Version="2024.7.19.9" />
         <PackageReference Include="Evergine.iOS" Version="2025.3.18.1041" />
         <PackageReference Include="Evergine.HLSLEverywhere" Version="2025.3.18.1041" />
         <PackageReference Include="Evergine.Metal" Version="2025.3.18.1041" />

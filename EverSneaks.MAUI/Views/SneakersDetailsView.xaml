@@ -211,29 +211,8 @@
                     Style="{StaticResource LabelStyle}"
                     Text="Size:" />
 
-                <StackLayout Grid.Row="3" Orientation="Horizontal">
-                    <Border Style="{StaticResource RoundBorderStyle}">
-                        <Label Style="{StaticResource NumberStyle}" Text="US 6" />
-                    </Border>
-
-                    <Border Style="{StaticResource RoundBorderStyle}">
-                        <Label Style="{StaticResource NumberStyle}" Text="US 7" />
-                    </Border>
-
-                    <Border Style="{StaticResource RoundBorderStyle}">
-                        <Label Style="{StaticResource NumberStyle}" Text="US 8" />
-                    </Border>
-
-                    <Border Style="{StaticResource RoundBorderStyle}">
-                        <Label Style="{StaticResource NumberStyle}" Text="US 10" />
-                    </Border>
-                </StackLayout>
-                <Grid Grid.Row="4" VerticalOptions="End">
-                    <Label Style="{StaticResource PriceStyle}" Text="$169.90" />
-                    <Border Style="{StaticResource AddCartStyle}">
-                        <Label Style="{StaticResource AddCartTextStyle}" Text="Add to Cart" />
-                    </Border>
-                </Grid>
+                <Button 
+                    Grid.Row="3" Text="Load Remote Model" Clicked="Button_OnClicked"></Button>
             </Grid>
 
             <controls:TabView Grid.Row="2" Style="{StaticResource TabViewStyle}" />
