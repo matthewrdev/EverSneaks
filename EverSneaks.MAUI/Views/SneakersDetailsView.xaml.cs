@@ -31,10 +31,6 @@ public partial class SneakersDetailsView : ContentPage
 
     private void HideEveryCheckImage()
     {
-        this.selectedGrayImage.IsVisible = false;
-        this.selectedBlueImage.IsVisible = false;
-        this.selectedRedImage.IsVisible = false;
-        this.selectedOrangeImage.IsVisible = false;
     }
 
     protected override void OnDisappearing()
@@ -132,6 +128,7 @@ public partial class SneakersDetailsView : ContentPage
 
             if (!File.Exists(filePath))
             {
+                Console.WriteLine($"Downloading {model.Description} from {url} to {filePath}");
 
                 using (var client = new HttpClient())
                 {
@@ -139,8 +136,10 @@ public partial class SneakersDetailsView : ContentPage
                     var content = await response.Content.ReadAsByteArrayAsync();
                     await File.WriteAllBytesAsync(filePath, content);
                 }
+                Console.WriteLine($"Download complete! ✅");
             }
 
+            Console.WriteLine($"Loading model into Evergine scene");
             await evergineApplication.LoadGlb(filePath);
 
         }

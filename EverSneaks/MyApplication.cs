@@ -8,8 +8,11 @@ using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Graphics.Effects;
 using Evergine.Framework.Graphics.Materials;
+using Evergine.Framework.Managers;
+using Evergine.Framework.Physics3D;
 using Evergine.Framework.Runtimes;
 using Evergine.Framework.Services;
+using Evergine.Mathematics;
 using EverSneaks.Services;
 using Random = Evergine.Framework.Services.Random;
 
@@ -17,7 +20,11 @@ namespace EverSneaks
 {
     public partial class MyApplication : Application
     {
-        MyScene scene;
+        
+    readonly Vector3 AssetScale =new Vector3(40,40,40);
+    private readonly Quaternion AssetRotation = Quaternion.Identity;
+    
+        DefaultScene scene;
         
         public MyApplication()
         {
@@ -44,7 +51,7 @@ namespace EverSneaks
             var assetsService = this.Container.Resolve<AssetsService>();
 
             // Navigate to scene
-            scene = assetsService.Load<MyScene>(EvergineContent.Scenes.MyScene_wescene);
+            scene = assetsService.Load<DefaultScene>(EvergineContent.Scenes.MyScene_wescene);
             ScreenContext screenContext = new ScreenContext(scene);
             screenContextManager.To(screenContext);
         }
@@ -56,94 +63,82 @@ namespace EverSneaks
             Model model = null;
             using (var fileStream = File.OpenRead(filePath))
             {
-                model = await Evergine.Runtimes.GLB.GLBRuntime.Instance.Read(fileStream);
-                // model = await Evergine.Runtimes.GLB.GLBRuntime.Instance.Read(fileStream, CustomMaterialAssigner);
+                // model = await Evergine.Runtimes.GLB.GLBRuntime.Instance.Read(fileStream);
+                model = await Evergine.Runtimes.GLB.GLBRuntime.Instance.Read(fileStream, CustomMaterialAssigner);
             }
             
             var entity = model.InstantiateModelHierarchy(assetsService);
+            var root = new Entity().AddComponent(new Transform3D());
+            root.AddChild(entity);
 
-            entity.Name = "Runtime loaded GLB";
+            entity.AddComponent(new MeshCollider3D()
+            {
+                IsConvex = false,
+            });
+            root.AddComponent(new StaticBody3D());
             
-            scene.Managers.EntityManager.Add(entity);
+            var transform = root.FindComponent<Transform3D>();
+            if (transform != null)
+            {
+                transform.LocalScale = AssetScale;
+                transform.LocalRotation = Quaternion.ToEuler(AssetRotation);
+            }
+
+            ((RenderManager)this.scene.Managers.RenderManager).DebugLines = true;
+            
+            // Add to scene
+            scene.Managers.EntityManager.Add(root);
+            
+            RouteSceneLoader.LoadSceneFromJson(scene, this, Color.WhiteSmoke);
         }
         
+        // Only Diffuse channel is needed
         private async Task<Material> CustomMaterialAssigner(MaterialData data)
-{
-    var assetsService = Application.Current.Container.Resolve<AssetsService>();
-
-    // Get textures            
-    var baseColor = await data.GetBaseColorTextureAndSampler();
-    var metallicRoughness = await data.GetMetallicRoughnessTextureAndSampler();
-    var normalTex = await data.GetNormalTextureAndSampler();  
-    var emissive = await data.GetEmissiveTextureAndSampler();
-    var occlussion = await data.GetOcclusionTextureAndSampler();            
-
-    // Get Layer
-    var opaqueLayer = assetsService.Load<RenderLayerDescription>(DefaultResourcesIDs.OpaqueRenderLayerID);
-    var alphaLayer = assetsService.Load<RenderLayerDescription>(DefaultResourcesIDs.AlphaRenderLayerID);
-    RenderLayerDescription layer;
-    float alpha = data.BaseColor.A / 255.0f;
-    switch (data.AlphaMode)
-    {
-        default:
-        case Evergine.Framework.Runtimes.AlphaMode.Mask:
-        case Evergine.Framework.Runtimes.AlphaMode.Opaque:
-            layer = opaqueLayer;
-            break;
-        case Evergine.Framework.Runtimes.AlphaMode.Blend:
-            layer = alphaLayer;
-            break;
-    }
-
-    // Create standard material            
-    var effect = assetsService.Load<Effect>(DefaultResourcesIDs.StandardEffectID);            
-    StandardMaterial standard = new StandardMaterial(effect)
-    {
-        LightingEnabled = data.HasVertexNormal,
-        IBLEnabled = data.HasVertexNormal,
-        BaseColor = data.BaseColor,
-        Alpha = alpha,
-        BaseColorTexture = baseColor.Texture,
-        BaseColorSampler = baseColor.Sampler,
-        Metallic = data.MetallicFactor,
-        Roughness = data.RoughnessFactor,
-        MetallicRoughnessTexture = metallicRoughness.Texture,
-        MetallicRoughnessSampler = metallicRoughness.Sampler,
-        EmissiveColor = data.EmissiveColor.ToColor(),
-        EmissiveTexture = emissive.Texture,
-        EmissiveSampler = emissive.Sampler,
-        OcclusionTexture = occlussion.Texture,
-        OcclusionSampler = occlussion.Sampler,
-        LayerDescription = layer,                
-    };
-
-    // Normal textures
-    if (data.HasVertexTangent)
-    {
-        standard.NormalTexture = normalTex.Texture;
-        standard.NormalSampler = normalTex.Sampler;
-    }
-
-    // Alpha test
-    if (data.AlphaMode == Evergine.Framework.Runtimes.AlphaMode.Mask)
-    {
-        standard.AlphaCutout = data.AlphaCutoff;
-    }
-
-    // Vertex Color
-    if (data.HasVertexColor)
-    {
-        if (standard.ActiveDirectivesNames.Contains("VCOLOR"))
         {
-            var directivesArray = standard.ActiveDirectivesNames;
-            Array.Resize(ref directivesArray, directivesArray.Length + 1);
-            directivesArray[directivesArray.Length - 1] = "VCOLOR";
-            standard.ActiveDirectivesNames = directivesArray;
-        }
-    }
+            var assetsService = Application.Current.Container.Resolve<AssetsService>();
 
-    return standard.Material;
-}
+            // Get textures            
+            var baseColor = await data.GetBaseColorTextureAndSampler();
+
+            // Get Layer
+            var opaqueLayer = assetsService.Load<RenderLayerDescription>(DefaultResourcesIDs.OpaqueRenderLayerID);
+            var alphaLayer = assetsService.Load<RenderLayerDescription>(DefaultResourcesIDs.AlphaRenderLayerID);
+            RenderLayerDescription layer;
+            float alpha = data.BaseColor.A / 255.0f;
+            switch (data.AlphaMode)
+            {
+                default:
+                case AlphaMode.Mask:
+                case AlphaMode.Opaque:
+                    layer = opaqueLayer;
+                    break;
+                case AlphaMode.Blend:
+                    layer = alphaLayer;
+                    break;
+            }
+
+            // Create standard material            
+            var effect = assetsService.Load<Effect>(DefaultResourcesIDs.StandardEffectID);
+            StandardMaterial standard = new StandardMaterial(effect)
+            {
+                BaseColor = data.BaseColor,
+                Alpha = alpha,
+                BaseColorTexture = baseColor.Texture,
+                BaseColorSampler = baseColor.Sampler,
+                Metallic = data.MetallicFactor,
+                Roughness = data.RoughnessFactor,
+                EmissiveColor = data.EmissiveColor.ToColor(),                
+                LayerDescription = layer,
+            };
+
+            // Alpha test
+            if (data.AlphaMode == AlphaMode.Mask)
+            {
+                standard.AlphaCutout = data.AlphaCutoff;
+            }            
+
+            return standard.Material;
+        }
     }
 }
 
