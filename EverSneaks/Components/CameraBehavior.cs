@@ -146,6 +146,8 @@ namespace EverSneaks.Components
 
             var ray = GetRayFromScreenPoint(screenPos.ToVector2(), camera3D, new Vector2(display.Width, display.Height));
 
+            var colliders = this.Managers.PhysicManager3D.PhysicComponentList;
+            
             var hitResult = this.Managers.PhysicManager3D.RayCast(ref ray, float.MaxValue, CollisionCategory3D.All);
 
             if (hitResult.Succeeded)

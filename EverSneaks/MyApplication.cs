@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -71,10 +72,12 @@ namespace EverSneaks
             var root = new Entity().AddComponent(new Transform3D());
             root.AddChild(entity);
 
-            entity.AddComponent(new MeshCollider3D()
+            var collider = new MeshCollider3D()
             {
                 IsConvex = false,
-            });
+            };
+            
+            root.AddComponent(collider);
             root.AddComponent(new StaticBody3D());
             
             var transform = root.FindComponent<Transform3D>();
