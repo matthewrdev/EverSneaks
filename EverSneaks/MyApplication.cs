@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Evergine.Common.Graphics;
 using Evergine.Common.IO;
+using Evergine.Components.Graphics3D;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
 using Evergine.Framework.Graphics.Effects;
@@ -69,13 +70,37 @@ namespace EverSneaks
             }
             
             var entity = model.InstantiateModelHierarchy(assetsService);
+            
+            var meshEntity = entity.FindComponentInChildren<MeshComponent>();
+            var meshEntity2 = entity.FindChildWithComponent<MeshComponent>();
+            // if (meshEntity != null)
+            // {
+            //     meshEntity.
+            //     
+            //     meshEntity.AddComponent(new StaticBody3D()
+            //     {
+            //         IsEnabled = true,
+            //         CollisionCategories = CollisionCategory3D.All
+            //     });
+            //
+            //     meshEntity.AddComponent(new MeshCollider3D()
+            //     {
+            //         IsConvex = false,
+            //         IsEnabled = true
+            //     });
+            // }
 
             var collider = new MeshCollider3D()
             {
                 IsConvex = false,
+                IsEnabled = true
             };
             
-            entity.AddComponent(new StaticBody3D());
+            entity.AddComponent(new StaticBody3D()
+            {
+                IsEnabled = true,
+                CollisionCategories = CollisionCategory3D.All
+            });
             entity.AddComponent(collider);
             
             var transform = entity.FindComponent<Transform3D>();

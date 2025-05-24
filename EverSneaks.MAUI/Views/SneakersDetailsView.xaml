@@ -6,12 +6,16 @@
     xmlns:controls="clr-namespace:EverSneaks.MAUI.Controls"
     xmlns:evergine="clr-namespace:EverSneaks.MAUI.Evergine"
     Title="SneakersDetailsView"
-    Shell.NavBarIsVisible="False">
+    Shell.NavBarIsVisible="True">
 
-    <Grid RowDefinitions="*, Auto" BackgroundColor="White">
+    <Grid RowDefinitions="Auto, *, Auto" BackgroundColor="White">
 
-        <evergine:EvergineView x:Name="evergineView" Grid.Row="0" />
+        <ContentView Grid.Row="0" HeightRequest="40">
+            <Label Text="This is sample text."></Label>
+        </ContentView>
         
-        <Button Grid.Row="1" Text="Load Remote Model" Clicked="Button_OnClicked"></Button>
+        <evergine:EvergineView x:Name="evergineView" Grid.Row="1" />
+        
+        <Button Grid.Row="2" Text="Load Remote Model" Clicked="Button_OnClicked"></Button>
     </Grid>
 </ContentPage>

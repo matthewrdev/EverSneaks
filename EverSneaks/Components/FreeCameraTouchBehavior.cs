@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Evergine.Common.Graphics;
 using Evergine.Common.Input.Pointer;
@@ -7,6 +8,7 @@ using Evergine.Components.Graphics3D;
 using Evergine.Components.Primitives;
 using Evergine.Framework;
 using Evergine.Framework.Graphics;
+using Evergine.Framework.Physics3D;
 using Evergine.Framework.Services;
 using Evergine.Mathematics;
 
@@ -193,9 +195,12 @@ public class CameraBehavior : Behavior
 
         var ray = GetRayFromScreenPoint(screenPos.ToVector2(), camera3D, new Vector2(display.Width, display.Height));
 
-        var colliders = this.Managers.PhysicManager3D.PhysicComponentList;
+        var colliders = this.Managers.PhysicManager3D.PhysicComponentList;;
+
+        var results = new List<HitResult3D>();
+        this.Managers.PhysicManager3D.RayCastAll(ref ray, 20_000f, results, CollisionCategory3D.All);
             
-        var hitResult = this.Managers.PhysicManager3D.RayCast(ref ray, float.MaxValue);
+        var hitResult = this.Managers.PhysicManager3D.RayCast(ref ray, 20_000f);
 
         if (hitResult.Succeeded)
         {
@@ -203,9 +208,26 @@ public class CameraBehavior : Behavior
         }
         
         DrawDebugLine(ray.Position, ray.Position + (ray.Direction * 100));
+        DrawDebugCircles(results);
     }
-    
-    private void DrawDebugLine(Vector3 start, Vector3 end)
+
+    private void DrawDebugCircles(List<HitResult3D> results)
+    {
+        if (results.Count == 0)
+        {
+            return;
+        }
+        
+        foreach (var hit in results)
+        {
+            var hitPosition = hit.Point;
+
+            DrawDebugLine(hit.Point, hit.Point + hit.Normal, Color.Magenta);
+        }
+    }
+
+    private void DrawDebugLine(Vector3 start, 
+                               Vector3 end, Evergine.Common.Graphics.Color? color = null)
     {
         // Create the LineMesh
         var lineEntity = new Entity("DebugLine")
@@ -224,14 +246,14 @@ public class CameraBehavior : Behavior
             new LinePointInfo()
             {
                 Position = start,
-                Color = Color.Green,
+                Color = color.HasValue ? color.Value : Color.Green,
                 Thickness = 0.5f
             },
 
             new LinePointInfo()
             {
                 Position = end,
-                Color = Color.Green,
+                Color = color.HasValue ? color.Value : Color.Green,
                 Thickness = 0.5f
             }
         };
