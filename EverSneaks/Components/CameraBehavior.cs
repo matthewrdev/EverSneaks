@@ -13,13 +13,15 @@ using Evergine.Mathematics;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using Evergine.Components.Graphics3D;
+using Evergine.Components.Primitives;
 using Evergine.Framework.Particles.Helpers;
 using Evergine.Framework.Physics3D;
 using static EverSneaks.Services.ControllerService;
 
 namespace EverSneaks.Components
 {
-    public class CameraBehavior : Behavior
+    public class CameraBehavior2 : Behavior
     {
         public float RotationSpeed = 0.2f;
         public float PanSpeed = 0.01f;
@@ -75,10 +77,6 @@ namespace EverSneaks.Components
         private Evergine.Mathematics.Point currentTouchState;
         private Vector2 lastTouchPosition;
         private Display display;
-
-        public CameraBehavior()
-        {
-        }
 
         /// <inheritdoc/>
         protected override void OnLoaded()
@@ -148,12 +146,14 @@ namespace EverSneaks.Components
 
             var colliders = this.Managers.PhysicManager3D.PhysicComponentList;
             
-            var hitResult = this.Managers.PhysicManager3D.RayCast(ref ray, float.MaxValue, CollisionCategory3D.All);
+            var hitResult = this.Managers.PhysicManager3D.RayCast(ref ray, float.MaxValue);
 
             if (hitResult.Succeeded)
             {
                 Debug.WriteLine($"Hit entity: {hitResult.Collider}, point: {hitResult.Point}, normal: {hitResult.Normal}");
             }
+            
+            
         }
         
         private void OnPointerPressed(object sender, PointerEventArgs data)
@@ -291,4 +291,5 @@ namespace EverSneaks.Components
         {
         }
     }
+
 }

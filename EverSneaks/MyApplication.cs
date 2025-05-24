@@ -69,18 +69,16 @@ namespace EverSneaks
             }
             
             var entity = model.InstantiateModelHierarchy(assetsService);
-            var root = new Entity().AddComponent(new Transform3D());
-            root.AddChild(entity);
 
             var collider = new MeshCollider3D()
             {
                 IsConvex = false,
             };
             
-            root.AddComponent(collider);
-            root.AddComponent(new StaticBody3D());
+            entity.AddComponent(new StaticBody3D());
+            entity.AddComponent(collider);
             
-            var transform = root.FindComponent<Transform3D>();
+            var transform = entity.FindComponent<Transform3D>();
             if (transform != null)
             {
                 transform.LocalScale = AssetScale;
@@ -90,7 +88,7 @@ namespace EverSneaks
             ((RenderManager)this.scene.Managers.RenderManager).DebugLines = true;
             
             // Add to scene
-            scene.Managers.EntityManager.Add(root);
+            scene.Managers.EntityManager.Add(entity);
             
             RouteSceneLoader.LoadSceneFromJson(scene, this, Color.WhiteSmoke);
         }
